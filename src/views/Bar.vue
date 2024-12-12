@@ -222,7 +222,7 @@ import drinksData from "../json/drinks.json";
 import barDrinksData from "../json/bar_drinks.json";
 import gamesData from "../json/games.json";
 import barGamesData from "../json/bar_games.json";
-import workersData from "../json/workers.json";
+import workersData from "../json/employee.json";
 import deleteFromFile from "../../js/delete.js"
 
 export default {
