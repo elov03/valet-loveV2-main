@@ -27,7 +27,7 @@
     "post_employee": "Manager",
     "salary_employee": 3000,
     "id_bar": 1,
-    "photo_employee": "/image/workers/bob_johnson.jpg"
+    "photo_employee": "/image/bob_johnson.jpg"
   },
   {
     "id_employee": 4,
@@ -37,7 +37,7 @@
     "post_employee": "Bartender",
     "salary_employee": 2400,
     "id_bar": 2,
-    "photo_employee": "/image/workers/alice_brown.jpg"
+    "photo_employee": "/image/alice_brown.jpg"
   },
   {
     "id_employee": 5,
@@ -47,7 +47,7 @@
     "post_employee": "Security",
     "salary_employee": 2800,
     "id_bar": 2,
-    "photo_employee": "/image/workers/charlie_davis.jpg"
+    "photo_employee": "/image/charlie_davis.jpg"
   },
   {
     "id_employee": 6,
@@ -57,7 +57,7 @@
     "post_employee": "Waitress",
     "salary_employee": 2100,
     "id_bar": 2,
-    "photo_employee": "/image/workers/eve_martinez.jpg"
+    "photo_employee": "/image/eve_martinez.jpg"
   },
   {
     "id_employee": 7,
@@ -67,7 +67,7 @@
     "post_employee": "Manager",
     "salary_employee": 3200,
     "id_bar": 3,
-    "photo_employee": "/image/workers/george_wilson.jpg"
+    "photo_employee": "/image/george_wilson.jpg"
   },
   {
     "id_employee": 8,
@@ -77,7 +77,7 @@
     "post_employee": "Waitress",
     "salary_employee": 2200,
     "id_bar": 3,
-    "photo_employee": "/image/workers/helen_clark.jpg"
+    "photo_employee": "/image/helen_clark.jpg"
   },
   {
     "id_employee": 9,
@@ -87,7 +87,7 @@
     "post_employee": "Security",
     "salary_employee": 2700,
     "id_bar": 3,
-    "photo_employee": "/image/workers/tom_white.jpg"
+    "photo_employee": "/image/tom_white.jpg"
   },
   {
     "id_employee": 10,
@@ -97,6 +97,6 @@
     "post_employee": "Bartender",
     "salary_employee": 2500,
     "id_bar": 3,
-    "photo_employee": "/image/workers/anna_black.jpg"
+    "photo_employee": "/image/anna_black.jpg"
   }
 ]

@@ -38,7 +38,11 @@ export default {
     return {
       
        msg: 'Welcome to Your Vue.js App',
-       usersData: []
+       usersData: [],
+       isAuthenticated: false, // État d'authentification
+      userRole: '', // Rôle de l'utilisateur
+      userName: '', // Nom d'utilisateur connecté
+
     };
   },
   methods: {
@@ -82,6 +86,68 @@ export default {
         console.log(error);
       }
     },
+
+    
+     // Fonction pour gérer la connexion
+     async loginUser(username, password) {
+      try {
+        const response = await this.$http.post("http://localhost:3000/auth/login", {
+          username: username,
+          userpass: password,
+        });
+
+        if (response.data && response.data.loginResult) {
+          // Mettre à jour les informations utilisateur
+          const userResponse = await this.$http.get("http://localhost:3000/auth/user");
+          if (userResponse.data) {
+            this.isAuthenticated = true;
+            this.userName = userResponse.data.user_name;
+            this.userRole = userResponse.data.user_role;
+            this.msg = `Login successful for ${this.userName}`;
+          }
+        } else {
+          this.isAuthenticated = false;
+          this.msg = "Invalid credentials.";
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        this.msg = "An error occurred during login.";
+      }
+    },
+
+    // Fonction pour gérer la déconnexion
+    async logoutUser() {
+      try {
+        const response = await this.$http.get("http://localhost:3000/auth/logout");
+        if (response.data && response.data.logoutResult) {
+          this.isAuthenticated = false;
+          this.userName = '';
+          this.userRole = '';
+          this.msg = "Logout successful.";
+        } else {
+          this.msg = "Logout failed.";
+        }
+      } catch (error) {
+        console.error("Logout error:", error);
+        this.msg = "An error occurred during logout.";
+      }
+    },
+
+    // Fonction pour accéder aux routes protégées
+    async accessProtected(endpoint) {
+      try {
+        const response = await this.$http.get(`http://localhost:3000/auth/${endpoint}`);
+        if (response.data) {
+          this.msg = `Access to ${endpoint}: ${JSON.stringify(response.data)}`;
+        } else {
+          this.msg = `Access denied to ${endpoint}`;
+        }
+      } catch (error) {
+        console.error("Protected route access error:", error);
+        this.msg = "An error occurred while accessing the route.";
+      }
+    },
+    
 },
 
   }
