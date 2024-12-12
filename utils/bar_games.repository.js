@@ -4,28 +4,28 @@ module.exports = {
     // Récupère tous les jeux
     async getAllBarGames() {
         try {
-            const sql = "SELECT * FROM games";
-            console.log("[BAR_GAMES] Exécution de la requête SQL pour récupérer les tables intermediaire bar_games...");
+            const sql = "SELECT * FROM bar_games";
+            console.log("[BAR_GAMES] Executing SQL query to retrieve staging tables bar_games...");
 
             // Tester la connexion au pool avant d'exécuter la requête
-            console.log("[DB] Vérification de la connexion au pool MySQL...");
+            console.log("[DB] Checking the connection to the MySQL pool...");
             await pool.getConnection(); // Vérifie que le pool est accessible
-            console.log("[DB] Connexion au pool MySQL réussie.");
+            console.log("[DB] Connection to MySQL pool successful.");
 
             // Exécuter la requête SQL
             const [rows] = await pool.query(sql); // Utilisation de `query` à la place de `execute`
 
             // Vérifier les résultats
             if (!rows || rows.length === 0) {
-                console.warn("[BAR_GAMES] Aucune table intermediaire jeu trouvée dans la base de données.");
+                console.warn("[BAR_GAMES] No intermediate game tables found in the database.");
                 return [];
             }
 
-            console.log(`[BAR_GAMES] ${rows.length} jeux récupérés.`);
+            console.log(`[BAR_GAMES] ${rows.length} games recovered.`);
             return rows;
         } catch (err) {
-            console.error("[BAR_GAMES] Erreur lors de la récupération de tous les jeux :", err.message);
-            throw new Error("Erreur lors de la récupération de tous les jeux.");
+            console.error("[BAR_GAMES] Error recovering all games:", err.message);
+            throw new Error("Error recovering all games.");
         }
     },
     async deleteGame(bar_gameId) {

@@ -5,7 +5,6 @@ const app = express();
 // View engine configuration
 app.set("view engine", "ejs");
 app.set("views", "views");
-
 const bodyParser = require("body-parser");
 app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));
 
@@ -20,6 +19,7 @@ app.use(
     resave: false
   })
 );
+
 
 const cors = require("cors");
 // CORS configuration
@@ -46,7 +46,9 @@ app.get('/', (request, response) => {
 app.use("/auth", require("./controllers/auth.route")); 
 app.use("/employees", require("./controllers/employeesapi.route"));
 app.use("/games", require("./controllers/gamesapi.route")); 
-
+app.use("/bargames", require("./controllers/bar_gamesapi.route"));
+app.use("/drinks", require("./controllers/drinksapi.route"));
+app.use("/bardrinks", require("./controllers/bar_drinksapi.route"));
 
 // Launching the server
 const port = process.env.WEB_PORT || 3000;

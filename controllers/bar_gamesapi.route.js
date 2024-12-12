@@ -5,39 +5,29 @@ const gameRepo = require('../utils/bar_games.repository.js');
 // Définition des routes
 router.get('/list', bar_gameListAction);
 router.delete('/remove/:bar_gameId', bar_gameDeleteAction);
-router.post('/create/bar_gameId', bar_gameCreateAction);  
+//router.post('/create/', bar_gameCreateAction);  
 router.patch('/update/:bar_gameId', bar_gameUpdateAction);
 
 
-
-// Route pour récupérer la liste des jeux
-async function gameListAction(request, response) {
+async function bar_gameListAction(request, response) {
     try {
-        console.log("Tentative de récupération de la liste des jeux...");
-        
-        const games = await gameRepo.getAllGames();  
-        console.log("Jeux récupérés : ", games);
-
-        // No game founded
-        if (!games || games.length === 0) {
-            console.log("Aucun jeu trouvé dans la base de données.");
-            return response.status(404).send("Aucun jeu trouvé.");
-        }
-
-        response.status(200).json(games);  // Retourne les jeux en JSON
+        var games = await gameRepo.getAllBarGames();
+        response.send(JSON.stringify(games));
     } catch (err) {
-        console.error("Erreur lors de la récupération de la liste des jeux : ", err);
-        response.status(500).send('Erreur lors de la récupération de la liste des jeux.');
+        console.error("Erreur lors de la récupération des employés :", err);
+        response.status(500).send("Erreur serveur lors de la récupération des employés.");
     }
 }
 
+
 // Route pour supprimer un jeu
-async function gameDeleteAction(request, response) {
+async function bar_gameDeleteAction(request, response) {
     try {
         const gameId = request.params.gameId;  
+        const barId = request.params.barId;
         console.log(`Tentative de suppression du jeu avec l'ID : ${gameId}`);
-
-        const numRows = await gameRepo.deleteGame(gameId); 
+        const numRows = await gameRepo.delOneGame(gameId, barId)
+        //const numRows = await gameRepo.deleteGame(gameId); 
         console.log(`Jeu supprimé. Nombre de lignes affectées : ${numRows}`);
 
         if (numRows === 0) {
@@ -52,46 +42,28 @@ async function gameDeleteAction(request, response) {
 }
 
 // Route pour créer un jeu
-async function gameCreateAction(req, res) {
+/*
+async function bar_gameCreateAction(request, response) {
     try {
-        const {
-            name_game,
-            price_game,
-            time_game,
-            nb_people_min_game,
-            nb_people_max_game,
-            state_game,
-            game_isdeluxe = 0,
-            game_realprice = null,
-        } = req.body;
-
-        // Validation simple
-        if (!name_game || !price_game || !time_game || !nb_people_min_game || !nb_people_max_game || !state_game) {
-            return res.status(400).send("Tous les champs obligatoires doivent être fournis.");
-        }
-
-        console.log("Tentative de création d'un jeu avec les données : ", req.body);
-
-        const newGameId = await gameRepo.createGame({
-            name_game,
-            price_game,
-            time_game,
-            nb_people_min_game,
-            nb_people_max_game,
-            state_game,
-            game_isdeluxe,
-            game_realprice,
-        });
-
-        res.status(201).send(`Jeu créé avec succès avec l'ID : ${newGameId}`);
+        var employeeId = await employeeRepo.addOneEmployee(request.body.id_bar);
+        var numRows = await employeeRepo.editOneEmployee(
+            employeeId,
+            request.body.id_bar,
+            request.body.name_employee,
+            request.body.age_employee,
+            request.body.gender_employee,
+            request.body.post_employee,
+            request.body.salary_employee
+        );
+        let result = { id_employee: employeeId, rowsUpdated: numRows };
+        response.send(JSON.stringify(result));
     } catch (err) {
-        console.error("Erreur lors de la création du jeu : ", err);
-        res.status(500).send('Erreur lors de la création du jeu.');
+        console.error("Erreur lors de la création de l'employé :", err);
+        response.status(500).send("Erreur serveur lors de la création de l'employé.");
     }
-}
+}*/
 
-
-async function gameUpdateAction(req, res) {
+async function bar_gameUpdateAction(req, res) {
     try {
         const gameId = req.params.gameId;
         const updateData = req.body;     

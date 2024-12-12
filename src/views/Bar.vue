@@ -61,6 +61,11 @@
             </div>
           </div>
         </div>
+
+        <div class="items">
+          <button @click="currentSection = 'all_drinks'">DRINKS</button>
+          <button @click="currentSection = 'all_games'">GAMES</button>
+        </div>
       </section>
 
       <!-- About Section (not implemented)-->
@@ -212,6 +217,120 @@
         <p v-else>No employee available</p>
       </section>
 
+      <!-- All Drinks Section -->
+      <section v-if="currentSection === 'all_drinks'">
+        <button @click="currentSection = 'home'" class="back-button">← Back to Home</button>
+        <h2 class="centered-title">Available Drinks</h2>
+        <button @click="addDrink" class="add-button">+ Add a drink</button>
+        <table class="drink-table" v-if="AllDrinks.length > 0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Ingredients</th>
+              <th>Price (€)</th>
+              <th>Update</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(drink, index) in AllDrinks" :key="index">
+              <td v-if="!drink.editMode">{{ drink.id_drink }}</td>
+              <td v-else>
+                <input v-model="drink.id_drink" placeholder="Enter drink id">
+              </td>
+              <td v-if="!drink.editMode">{{ drink.name_drink }}</td>
+              <td v-else>
+                <input v-model="drink.name_drink" placeholder="Enter drink name">
+              </td>
+              <td v-if="!drink.editMode">{{ drink.ingredient_drink }}</td>
+              <td v-else>
+                <input v-model="drink.ingredient_drink" placeholder="Enter employee post">
+              </td>
+              <td v-if="!drink.editMode">{{ drink.price_selling_drink }}</td>
+              <td v-else>
+                <input type="number" v-model="drink.price_selling_drink" placeholder="Enter selling price">
+              </td>
+              <td>
+                <button v-if="!drink.editMode" @click="editDrink(index)">Update</button>
+                <button v-else @click="saveDrink(index)">Save</button>
+              </td>
+              <td>
+                <button @click="sendDeleteRequestDrink(drink.id_drink)">Delete</button><!--was index before but index is number of line and not id-->
+              </td>
+            </tr>
+          </tbody>
+          
+        </table>
+        <p v-else>No drinks available.</p>
+      </section>
+
+      <!-- All Games Section -->
+      <section v-if="currentSection === 'all_games'">
+        <button @click="currentSection = 'home'" class="back-button">← Back to Home</button>
+        <h2 class="centered-title">Available Games</h2>
+        <button @click="addGame" class="add-button">+ Add a game</button>
+        <table class="game-table" v-if="AllGames.length > 0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Price (€)</th>
+              <th>Time</th>
+              <th>Min Players</th>
+              <th>Max Players</th>
+              <th>State</th>
+              <th>Update</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(game, index) in AllGames" :key="index">
+              <td v-if="!game.editMode">{{ game.id_game }}</td>
+              <td v-else>
+                <input v-model="game.id_game" placeholder="Enter game id">
+              </td>
+              <td v-if="!game.editMode">{{ game.name_game }}</td>
+              <td v-else>
+                <input v-model="game.name_game" placeholder="Enter game name">
+              </td>
+              <td v-if="!game.editMode">{{ game.price_game }}</td>
+              <td v-else>
+                <input type="number" v-model="game.price_game" placeholder="Enter playing price game">
+              </td>
+              <td v-if="!game.editMode">{{ game.time_game }}</td>
+              <td v-else>
+                <input v-model="game.time_game" placeholder="Enter time for a game">
+              </td>
+              <td v-if="!game.editMode">{{ game.nb_people_min_game }}</td>
+              <td v-else>
+                <input type="number" v-model="game.nb_people_min_game" placeholder="Enter nb people min per game">
+              </td>
+              <td></td>
+              <td v-if="!game.editMode">{{ game.nb_people_max_game }}</td>
+              <td v-else>
+                <input type="number" v-model="game.nb_people_max_game" placeholder="Enter nb people max per game">
+              </td>
+              <td v-if="!game.editMode">{{ game.state_game }}</td>
+              <td v-else>
+                <input v-model="game.state_game" placeholder="Enter state of the game">
+              </td>
+              <td>
+                <button v-if="!game.editMode" @click="editGame(index)">Update</button>
+                <button v-else @click="saveGame(index)">Save</button>
+              </td>
+              <td>
+                <button @click="sendDeleteRequestGame(game.id_game)">Delete</button><!--was index before but index is number of line and not id-->
+              </td>
+            </tr>
+          </tbody>
+          
+        </table>
+        <p v-else>No Games available </p>
+      </section>
+
+
+
     </main>
   </div>
 </template>
@@ -231,38 +350,44 @@ export default {
     return {
       currentSection: "home",
       bar: null,
-      barDrinks: [],
-      barGames: [],
+      allDrinks: [],
+      barDrinksFiltered: [],
+      allGames: [],
+      barGamesFiltered: [],
       barEmployees: [],
       showHours: false,
-      //drinks button added
-    filteredDrinks: [], 
     };
   },
-
-
-
-
   
   mounted() {
-    this.loadBarData();
     const barId = parseInt(this.$route.params.barId, 10);
-    this.loadBarEmployees(barId); // Uses the dynamic identifier
-    //this.loadBarGames(barId);
-    //this.loadAllDrinks();
+    this.loadBarData();
+    this.loadAllGames()
+    this.loadBarGames(barId);
+    this.loadBarEmployees(barId); 
+    this.loadAllDrinks();
+    this.loadBardrinks(barId)
     this.bar = barsData.find(bar => bar.id_bar === barId);
-    
     },
-
 
   computed: {
     filteredEmployee() {
       return this.barEmployees;
     },
+    AllGames(){
+      return this.allGames;
+    },
     filteredGames() {
-      return this.barGames;
+      return this.barGamesFiltered;
+    },
+    AllDrinks(){
+      return this.allDrinks;
+    },
+    filteredDrinks() {
+      return this.barDrinksFiltered;
     }
   },
+
   methods: {
   loadBarData() {
     const barId = parseInt(this.$route.params.id, 10);
@@ -272,31 +397,327 @@ export default {
   toggleHours() {
     this.showHours = !this.showHours;
   },
-  //----------------------------------------DRINKS---------------------------------------------------
+
+
+  //----------------------------------------ALL DRINKS---------------------------------------------------
   async loadAllDrinks() {
     try {
-        let responseGames = await fetch('http://localhost:3000/drinks/list'); 
-        this.barGames = await responseGames.json(); 
+        let responseDrinks = await fetch('http://localhost:3000/drinks/list'); 
+        this.allDrinks = await responseDrinks.json(); 
     } catch (error) {
         console.error("Error when loading drinks :", error);
     }
   },
 
+  async addDrink(){
+    const newDrink = {
+      id_drink: 0,
+      name_drink: "Default Name",
+      price_production_drink: 0,
+      price_selling_drink: 0,
+      ingredient_drink: "Default Ingredient",
+      quantity_drink: 0,
+      };
+    try {
+      const response = await fetch("http://localhost:3000/drinks/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newDrink)
+        });
+        if (!response.ok) throw new Error("Error during creation.");
+        await this.loadAllDrinks();
+      } catch (ex) { 
+        console.log(ex); 
+      }
+  },
+
+  async editDrink(index) {
+    this.$set(this.allDrinks[index], 'editMode', true);
+  },
+    
+  async saveDrink(index) {
+    try {
+      const barId = parseInt(this.$route.params.barId, 10);
+      const drink = this.allDrinks[index];
+
+      // Data to be sent to the API for updating
+      const updateData = {
+        name_drink: drink.name_drink,
+        price_production_drink: drink.price_production_drink,
+        price_selling_drink: drink.price_selling_drink,
+        ingredient_drink: drink.ingredient_drink,
+        quantity_drink: drink.quantity_drink
+      };
+
+      // Call the API to update the employee
+      const response = await fetch(`http://localhost:3000/drinks/update/${drink.id_drink}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        alert("Error updating drink : " + errorMessage);
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Drink updated:", result);
+
+      // Désactiver le mode édition
+      this.$set(this.allDrinks[index], 'editMode', false);
+
+      // Recharger la liste des employés pour refléter les changements
+      await this.loadAllDrinks();
+    } catch (error) {
+      console.error("Error updating drink :", error);
+      alert("An error has occurred while updating the drink.");
+    }
+  },
+
+  async sendDeleteRequestDrink(drinkId) {
+    try {
+      const barId = parseInt(this.$route.params.barId, 10);
+
+      const response = await fetch(`http://localhost:3000/drinks/del/${drinkId}`, {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        const errMsg = await response.text();
+        alert("Error when deleting drink : " + errMsg);
+        return;
+      }
+
+      //part to delete all element of bar_drink that contain drinkId
+      /*
+      const response = await fetch(`http://localhost:3000/bardrinks/delall/${drinkId}`, {
+        method: "GET"
+      });*/
 
 
+      let result = await response.json();
+      console.log("drink deleted:", result);
+
+      // Update the list of employees by calling the loadBarEmployees function
+      await this.loadAllDrinks();
+    } catch (error) {
+      console.error("Error when deleting drink :", error);
+      alert("An error occurred when deleting the drink.");
+    }
+  },
 
 
+  //----------------------------------------DRINKS IN BAR---------------------------------------------------
+  async loadBardrinks(barId) {
+      try {
+        const responsedrinks = await fetch('http://localhost:3000/drinks/list');
+        if (!responsedrinks.ok) {
+          const msg = await responsedrinks.text();
+          alert("Erreur chargement des games: " + msg);
+          return;
+        }
+        let allDrinks = await responsedrinks.json();
+        
+        const responsebardrinks = await fetch('http://localhost:3000/bardrinks/list');
+        if (!responsebardrinks.ok) {
+          const msg = await responsebardrinks.text();
+          alert("Erreur chargement des bar games: " + msg);
+          return;
+        }
+        let allBardrinks = await responsebardrinks.json();
+        
+        const associatedDrinkIds = [];
+        for (const bg of allBardrinks) {
+          if (bg.id_bar === barId) {
+            associatedDrinkIds.push(bg.id_drink);
+          }
+        }
 
+        if (associatedDrinkIds.length === 0) {
+          console.warn(`No drinks associeted to ID bar : ${barId}`);
+          this.barDrinksFiltered = [];
+          return;
+        }
 
+        // Filter the games to include only those associated with the bar
+        this.barDrinksFiltered = allDrinks.filter(drink => associatedDrinkIds.includes(drink.id_drink));
 
+        //this.barWorkers = allGames.filter(gmes => gmes.id_bar === barId);
+        console.log("Employés chargés:", this.allDrinks);
+      } catch (error) {
+        console.error("Erreur chargement employés:", error);
+      }
+  },
 
+  //----------------------------------------ALL GAMES----------------------------------------------------  
+  async loadAllGames() {
+    try {
+        let responseGames = await fetch('http://localhost:3000/games/list'); // Appel API pour récupérer tous les jeux
+        this.allGames = await responseGames.json(); 
+    } catch (error) {
+        console.error("Erreur lors du chargement des jeux :", error);
+      }
+  },
 
+  async addGame(){
+    const newGame = {
+      id_game: 0,
+      name_game: "Default Name",
+      price_game: 0,
+      time_game: "00:00:00",
+      nb_people_min_game: 0,
+      nb_people_max_game: 1000,
+      state_game : "New"
+      };
+    try {
+      const response = await fetch("http://localhost:3000/games/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newGame)
+        });
+        if (!response.ok) throw new Error("Error during creation.");
+        await this.loadAllGames();
+      } catch (ex) { 
+        console.log(ex); 
+      }
+  },
 
-  //----------------------------------------GAMES----------------------------------------------------
-  
+  async editGame(index) {
+    this.$set(this.allGames[index], 'editMode', true);
+  },
+    
+  async saveGame(index) {
+    try {
+      const barId = parseInt(this.$route.params.barId, 10);
+      const game = this.allGames[index];
 
+      // Data to be sent to the API for updating
+      const updateData = {
+        name_game: game.name_game,
+        price_game: game.price_game,
+        time_game: game.time_game,
+        nb_people_min_game: game.nb_people_min_game,
+        nb_people_max_game: game.nb_people_max_game,
+        state_game: game.state_game
+      };
+
+      // Call the API to update the game
+      const response = await fetch(`http://localhost:3000/games/update/${game.id_game}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        alert("Error updating game : " + errorMessage);
+        return;
+      }
+
+      const result = await response.json();
+      console.log("Game updated:", result);
+
+      // Désactiver le mode édition
+      this.$set(this.allGames[index], 'editMode', false);
+
+      // Recharger la liste des game pour refléter les changements
+      await this.loadAllGames();
+    } catch (error) {
+      console.error("Error updating game :", error);
+      alert("An error has occurred while updating the game.");
+    }
+  },
+
+  async sendDeleteRequestGame(gameId) {
+    try {
+      const barId = parseInt(this.$route.params.barId, 10);
+
+      const response = await fetch(`http://localhost:3000/games/del/${gameId}`, {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        const errMsg = await response.text();
+        alert("Error when deleting game : " + errMsg);
+        return;
+      }
+      let result = await response.json();
+      console.log("game deleted:", result);
+
+      await this.loadAllGames();
+
+      //part to delete all element of bar_drink that contain drinkId
+      /*
+      const response = await fetch(`http://localhost:3000/bargames/delall/${gameId}`, {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        const errMsg = await response.text();
+        alert("Error when deleting game in the bars: " + errMsg);
+        return;
+      }
+      let result = await response.json();
+      console.log("games deleted in all bars:", result);
+
+      
+      await this.loadBarGames(barId);
+      */
+
+    } catch (error) {
+      console.error("Error when deleting game :", error);
+      alert("An error occurred when deleting the game.");
+    }
+  },
  
 
+  //----------------------------------------GAMES IN BAR---------------------------------------------------- 
+  async loadBarGames(barId) {
+      try {
+        const responsegames = await fetch('http://localhost:3000/games/list');
+        if (!responsegames.ok) {
+          const msg = await responsegames.text();
+          alert("Erreur chargement des games: " + msg);
+          return;
+        }
+        let allGames = await responsegames.json();
+        
+        const responsebargames = await fetch('http://localhost:3000/bargames/list');
+        if (!responsebargames.ok) {
+          const msg = await responsebargames.text();
+          alert("Erreur chargement des bar games: " + msg);
+          return;
+        }
+        let allBarGames = await responsebargames.json();
+        
+        const associatedGameIds = [];
+        for (const bg of allBarGames) {
+          if (bg.id_bar === barId) {
+            associatedGameIds.push(bg.id_game);
+          }
+        }
+
+        if (associatedGameIds.length === 0) {
+          console.warn(`Aucun jeu associé au bar avec ID ${barId}`);
+          this.barGames = [];
+          return;
+        }
+
+        // Filter the games to include only those associated with the bar
+        this.barGames = allGames.filter(game => associatedGameIds.includes(game.id_game));
+
+        //this.barWorkers = allGames.filter(gmes => gmes.id_bar === barId);
+        console.log("Employés chargés:", this.barGames);
+      } catch (error) {
+        console.error("Erreur chargement employés:", error);
+      }
+  },
 
 
   //---------------------------------------EMPLOYEES-------------------------------------------------------
@@ -308,8 +729,6 @@ export default {
         console.error("Error when loading employees :", error);
     }
   },
-
-
 
   //displays employees according to the bar to which they are assigned using the bar id
   async loadBarEmployees(barId) {
@@ -326,13 +745,10 @@ export default {
       } catch (error) {
         console.error("Employee loading error :", error);
       }
-    },
+  },
 
-
-
-
-//add an employee to my database
-async addEmployee() {
+  //add an employee to my database
+  async addEmployee() {
       const barId = parseInt(this.$route.params.barId, 10);
       const newEmployee = {
         name_employee: "Default Name",
@@ -353,10 +769,10 @@ async addEmployee() {
       } catch (error) {
         console.error("Employee addition error :", error);
       }
-    },
+  },
 
-    //Activates edit mode for an employee
-    async editEmployee(index) {
+  //Activates edit mode for an employee
+  async editEmployee(index) {
     this.$set(this.barEmployees[index], 'editMode', true);
   },
     
@@ -405,7 +821,6 @@ async addEmployee() {
     }
   },
   
-
   //deletes the employee acr to her id
   async sendDeleteRequestEmployee(employeeId) {
     try {

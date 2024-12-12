@@ -1,7 +1,7 @@
 const pool = require(__dirname + "/db.include.js");
 
 module.exports = {
-    getBlankGame() {
+    getBlankDrink() {
         return {
             id_drink: 0,
             name_drink: "Default Game",
@@ -12,9 +12,9 @@ module.exports = {
         };
     },
 
-    async getAllGames() {
+    async getAllDrinks() {
         try {
-            let sql = "SELECT * FROM Games";
+            let sql = "SELECT * FROM Drink";
             const [rows, fields] = await pool.execute(sql);
             console.log("DRINK FETCHED: " + rows.length);
             return rows;
@@ -24,11 +24,11 @@ module.exports = {
         }
     },
     
-    async getOneGame(gameId) {
+    async getOneDrink(drinkId) {
         try {
-            let sql = "SELECT * FROM Games WHERE id_game = ?";
-            const [rows, fields] = await pool.execute(sql, [gameId]);
-            console.log("SINGLE GAME FETCHED: " + rows.length);
+            let sql = "SELECT * FROM drink WHERE id_drink = ?";
+            const [rows, fields] = await pool.execute(sql, [drinkId]);
+            console.log("SINGLE DRINK FETCHED: " + rows.length);
             if (rows.length == 1) {
                 return rows[0];
             } else {
@@ -40,10 +40,10 @@ module.exports = {
         }
     },
 
-    async delOneGame(gameId) {
+    async delOneDrink(drinkId) {
         try {
-            let sql = "DELETE FROM Games WHERE id_game = ?";
-            const [okPacket, fields] = await pool.execute(sql, [gameId]);
+            let sql = "DELETE FROM Drink WHERE id_drink = ?";
+            const [okPacket, fields] = await pool.execute(sql, [drinkId]);
             console.log("DELETE " + JSON.stringify(okPacket));
             return okPacket.affectedRows;
         } 
@@ -53,10 +53,10 @@ module.exports = {
         }
     },
 
-    async addOneGame() {
+    async addOneDrink() {
         try {
-            let sql = "INSERT INTO Games (name_game, price_game, time_game, nb_people_min_game, nb_people_max_game, state_game) VALUES \
-                                         ('Default Name', 0, '00.00.00', 0, 1000, 'New')";
+            let sql = "INSERT INTO Drink (name_drink, price_production_drink, price_selling_drink, ingredient_drink, quantity_drink) VALUES \
+                                         ('Default Name', 0, 0, 'Default Ingredient', 0)";
             const [okPacket, fields] = await pool.execute(sql);
             console.log("INSERT " + JSON.stringify(okPacket));
             return okPacket.insertId;
@@ -67,10 +67,10 @@ module.exports = {
         }
     },
 
-    async editOneGame(gameId, name, price, time, nb_people_min, nb_people_max, state, ) {
+    async editOneDrink(drinkId, name, price_production, price_selling, ingredient, quantity, ) {
         try {
-            let sql = "UPDATE Games SET name_game=?, price_game=?, time_game=?, nb_people_min_game=?, nb_people_max_game=?, state_game=? WHERE id_game=?";
-            const [okPacket, fields] = await pool.execute(sql, [name, price, time, nb_people_min, nb_people_max, state, gameId]);
+            let sql = "UPDATE Drink SET name_drink=?, price_production_drink=?, price_selling_drink=?, ingredient_drink=?, quantity_drink=? WHERE id_drink=?";
+            const [okPacket, fields] = await pool.execute(sql, [name, price_production, price_selling, ingredient, quantity, drinkId]);
             console.log("UPDATE " + JSON.stringify(okPacket));
             return okPacket.affectedRows;
         } 
