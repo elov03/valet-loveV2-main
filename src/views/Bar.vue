@@ -222,7 +222,7 @@ import drinksData from "../json/drinks.json";
 import barDrinksData from "../json/bar_drinks.json";
 import gamesData from "../json/games.json";
 import barGamesData from "../json/bar_games.json";
-import workersData from "../json/workers.json";
+import employeesData from "../json/employee.json";
 import deleteFromFile from "../../js/delete.js"
 
 export default {
@@ -246,15 +246,10 @@ export default {
   
   mounted() {
     this.loadBarData();
-    //this.loadBarDrinks();
-    //this.loadBarGames();
-    //this.loadAllGames();
-    //this.loadBarWorkers();
-    //this.loadAllWorkers();
     const barId = parseInt(this.$route.params.barId, 10);
     this.loadBarEmployees(barId); // Uses the dynamic identifier
-    this.loadBarGames(barId);
-    this.loadAllDrinks();
+    //this.loadBarGames(barId);
+    //this.loadAllDrinks();
     this.bar = barsData.find(bar => bar.id_bar === barId);
     
     },
@@ -300,153 +295,15 @@ export default {
   //----------------------------------------GAMES----------------------------------------------------
   
 
-  async loadAllGames() {
-    try {
-        let responseGames = await fetch('http://localhost:3000/games/list'); 
-        this.barGames = await responseGames.json(); 
-    } catch (error) {
-        console.error("Error when loading games :", error);
-    }
-  },
+ 
 
 
 
-  
-  //display the corresponding bar games according to the bar id
-  async loadBarGames(barId) {
-      try {
-        const response = await fetch('http://localhost:3000/games/list');
-        if (!response.ok) {
-          const msg = await response.text();
-          alert("Erreur chargement games: " + msg);
-          return;
-        }
-        let allGames = await response.json();
-        this.barGames = allGames.filter(emp => emp.id_bar === barId);
-        console.log("game chargés:", this.barGames);
-      } catch (error) {
-        console.error("Erreur chargement games:", error);
-      }
-    },
-
-
-
-
-
-
-
-async addGame() {
-      // Exemple pour ajouter un employé
-      const barId = parseInt(this.$route.params.barId, 10);
-      const newGames = {
-        name_game: "Default Game",
-    price_game: 0,
-    time_game: "00:30:00",
-    nb_people_min_game: 2,
-    nb_people_max_game: 4,
-    state_game: "Available",
-        id_bar: barId
-      };
-      try {
-        const response = await fetch("http://localhost:3000/games/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newGames)
-        });
-        if (!response.ok) throw new Error("Erreur lors de la création");
-        await this.loadBarGames(barId);
-      } catch (error) {
-        console.error("Erreur ajout game:", error);
-      }
-    },
-
-
-    editGame(index) {
-    // Active le mode édition pour cet employé
-    this.$set(this.barGames[index], 'editMode', true);
-  },
-    
-
-    async saveGame(index) {
-    try {
-      const barId = parseInt(this.$route.params.barId, 10);
-      const game = this.barGames[index];
-
-      // Données à envoyer à l'API pour la mise à jour
-      const updateData = {
-        id_bar: game.id_bar,
-        name_game: game.name_game,
-      price_game: game.price_game,
-      time_game: game.time_game,
-      nb_people_min_game: game.nb_people_min_game,
-      nb_people_max_game: game.nb_people_max_game,
-      state_game: game.state_game
-      };
-
-      // Appel à l'API pour mettre à jour l'employé
-      const response = await fetch(`http://localhost:3000/game/update/${game.id_employee}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updateData)
-      });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        alert("Erreur lors de la mise à jour de l'game : " + errorMessage);
-        return;
-      }
-
-      const result = await response.json();
-      console.log("game updated:", result);
-
-      // Désactiver le mode édition
-      this.$set(this.barGames[index], 'editMode', false);
-
-      // Recharger la liste des employés pour refléter les changements
-      await this.loadBarGames(barId);
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de l'game:", error);
-      alert("Une erreur est survenue lors de la mise à jour de l'game.");
-    }
-  },
-  
-
-
-  async sendDeleteRequestGame(gameId) {
-    try {
-      const barId = parseInt(this.$route.params.barId, 10);
-
-      // Appel GET pour supprimer l'employé
-      const response = await fetch(`http://localhost:3000/employees/del/${gameId}`, {
-        method: "GET"
-      });
-
-      if (!response.ok) {
-        const errMsg = await response.text();
-        alert("Erreur lors de la suppression de l'game : " + errMsg);
-        return;
-      }
-
-      let result = await response.json();
-      console.log("game deleted:", result);
-
-      // Actualiser la liste des employés
-      await this.loadBarGames(barId);
-    } catch (error) {
-      console.error("Erreur lors de la suppression de l'game :", error);
-      alert("Une erreur est survenue lors de la suppression de l'game.");
-    }
-  },
-
-
-
-  //---------------------------------------WORKERS-------------------------------------------------------
-  async loadAllWorkers() {
+  //---------------------------------------EMPLOYEES-------------------------------------------------------
+  async loadAllEmployees() {
     try {
         let responseEmployees = await fetch('http://localhost:3000/employees/list'); 
-        this.barWorkers = await responseEmployees.json(); 
+        this.barEmployees = await responseEmployees.json(); 
     } catch (error) {
         console.error("Error when loading employees :", error);
     }
@@ -455,7 +312,7 @@ async addGame() {
 
 
   //displays employees according to the bar to which they are assigned using the bar id
-  async loadBarWorkers(barId) {
+  async loadBarEmployees(barId) {
       try {
         const response = await fetch('http://localhost:3000/employees/list');
         if (!response.ok) {
@@ -464,8 +321,8 @@ async addGame() {
           return;
         }
         let allEmployees = await response.json();
-        this.barWorkers = allEmployees.filter(emp => emp.id_bar === barId);
-        console.log("Employees in charge:", this.barWorkers);
+        this.barEmployees = allEmployees.filter(emp => emp.id_bar === barId);
+        console.log("Employees in charge:", this.barEmployees);
       } catch (error) {
         console.error("Employee loading error :", error);
       }
@@ -492,35 +349,35 @@ async addEmployee() {
           body: JSON.stringify(newEmployee)
         });
         if (!response.ok) throw new Error("Error during creation");
-        await this.loadBarWorkers(barId);
+        await this.loadBarEmployees(barId);
       } catch (error) {
         console.error("Employee addition error :", error);
       }
     },
 
     //Activates edit mode for an employee
-    async editWorker(index) {
-    this.$set(this.barWorkers[index], 'editMode', true);
+    async editEmployee(index) {
+    this.$set(this.barEmployees[index], 'editMode', true);
   },
     
   //save the employee after editing it
-    async saveWorker(index) {
+    async saveEmployee(index) {
     try {
       const barId = parseInt(this.$route.params.barId, 10);
-      const worker = this.barWorkers[index];
+      const employee = this.barEmployees[index];
 
       // Data to be sent to the API for updating
       const updateData = {
-        id_bar: worker.id_bar,
-        name_employee: worker.name_employee,
-        age_employee: worker.age_employee,
-        gender_employee: worker.gender_employee,
-        post_employee: worker.post_employee,
-        salary_employee: worker.salary_employee
+        id_bar: employee.id_bar,
+        name_employee: employee.name_employee,
+        age_employee: employee.age_employee,
+        gender_employee: employee.gender_employee,
+        post_employee: employee.post_employee,
+        salary_employee: employee.salary_employee
       };
 
       // Call the API to update the employee
-      const response = await fetch(`http://localhost:3000/employees/update/${worker.id_employee}`, {
+      const response = await fetch(`http://localhost:3000/employees/update/${employee.id_employee}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -538,10 +395,10 @@ async addEmployee() {
       console.log("Employee updated:", result);
 
       // Désactiver le mode édition
-      this.$set(this.barWorkers[index], 'editMode', false);
+      this.$set(this.barEmployees[index], 'editMode', false);
 
       // Recharger la liste des employés pour refléter les changements
-      await this.loadBarWorkers(barId);
+      await this.loadBarEmployees(barId);
     } catch (error) {
       console.error("Error updating employee :", error);
       alert("An error has occurred while updating the employee.");
@@ -568,8 +425,8 @@ async addEmployee() {
       let result = await response.json();
       console.log("Employee deleted:", result);
 
-      // Update the list of employees by calling the loadBarWorkers function
-      await this.loadBarWorkers(barId);
+      // Update the list of employees by calling the loadBarEmployees function
+      await this.loadBarEmployees(barId);
     } catch (error) {
       console.error("Error when deleting employee :", error);
       alert("An error occurred when deleting the employee.");
@@ -665,14 +522,14 @@ header {
 /* Buttons in Sections */
 .drinks-section,
 .games-section,
-.workers-section {
+.employee-section {
   display: flex;
   flex-direction: column; 
   align-items: center;    
   
 }
 
-.drinks-section button, .games-section button, .workers-section button {
+.drinks-section button, .games-section button, .employee-section button {
   padding: 10px 20px;
   background-color: #05a04b;
   color: white;
@@ -682,7 +539,21 @@ header {
   transition: background-color 0.3s;
 }
 
-.drinks-section button:hover, .games-section button:hover, .workers-section button:hover {
+.drinks-section img,
+.games-section img,
+.employee-section img {
+  width: 300px;   /* Ajustez la taille de l'image */
+  height: auto;
+  margin-bottom: 10px; /* Espacement entre l'image et le bouton */
+}
+
+.employee-image{
+  width: 100px;
+  height: auto;
+}
+
+
+.drinks-section button:hover, .games-section button:hover, .employee-section button:hover {
   background-color: #e07b37;
 }
 
@@ -698,7 +569,7 @@ header {
 }
 
 /* Table Styles */
-.drink-table, .game-table, .worker-table {
+.drink-table, .game-table, .employee-table {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
@@ -706,23 +577,23 @@ header {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.drink-table th, .drink-table td, .game-table th, .game-table td {
+.drink-table th, .drink-table td, .game-table th, .game-table td, .employee-table th, .employee-table td {
   padding: 15px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-.drink-table th, .game-table th, .worker-table th {
+.drink-table th, .game-table th, .employee-table th {
   background-color: #ff8c42;
   color: white;
   font-weight: bold;
 }
 
-.drink-table tr:nth-child(even), .game-table tr:nth-child(even), .worker-table tr:nth-child(even) {
+.drink-table tr:nth-child(even), .game-table tr:nth-child(even), .employee-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.drink-table tr:hover, .game-table tr:hover, .worker-table tr:hover {
+.drink-table tr:hover, .game-table tr:hover, .employee-table tr:hover {
   background-color: #f1f1f1;
 }
 
@@ -790,6 +661,13 @@ header {
 
 .hoursList li {
   margin: 5px 0;
+}
+
+/*bar section*/
+.bar-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 </style>

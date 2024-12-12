@@ -112,7 +112,7 @@ app.use(session({
 
 //ajout juste en dessous
 app.use(cors({
-  origin: 'http://172.25.14.3:8081', // Adresse du frontend
+  origin: 'http://192.168.1.130:8081', // Adresse du frontend
   credentials: true,// Autorise les cookies/credentials
   methods: [ 'GET', 'POST' ] 
 }));
@@ -131,7 +131,7 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 },
     resave: false
 }));
-//app.use(cors());
+app.use(cors());
 
 // Route par défaut
 app.get('/', (request, response) => {
