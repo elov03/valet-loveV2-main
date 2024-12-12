@@ -1,25 +1,33 @@
 const passport = require("passport");
-const session = require("express-session");
-const usersRepo = require(__dirname + "\\users.repository.js");
+const usersRepo = require(__dirname + "\\users.repository.js"); // use same folder as the current file
+
+// const localStrategy = require('passport-local');
+// passport.use(new LocalStrategy(xxx));
+// check https://www.passportjs.org/howtos/password/ for full localStrategy implementation
+// instead, we will call request.login on our own, much cleaner...
+
+// session+passport docs:
+// https://www.passportjs.org/howtos/session/
+// https://www.passportjs.org/concepts/authentication/sessions/
 
 module.exports = {
-  // Initialisation des middleware de session et Passport
   initializeAuthentications(app) {
     app.use(passport.initialize());
     app.use(passport.authenticate('session'));
+    // app.use(passport.session()); // old syntax
 
-    
-    // Sérialisation des utilisateurs (sauvegardés dans la session)
-    passport.serializeUser((userFromDb, doneFunction) => {
-      const userObj = {
-        id: userFromDb.user_id,
-        name: userFromDb.user_name,
-        role: userFromDb.user_role,
-      };
+    // Serialization will be called during request.login(userFromDb) 
+    // Result will be saved into session
+    passport.serializeUser(function (userFromDb, doneFunction) { 
+      console.log("SERIALIZING...");
+      console.log(userFromDb);
+      const userObj = { "id": userFromDb.user_id, "name": userFromDb.user_name, "role": userFromDb.user_role }; // only the ID would be enough...
+      console.log(userObj);
       doneFunction(null, userObj);
     });
 
-    // Désérialisation des utilisateurs (chargés depuis la session)
+    // This will be login when serialized user is in the session
+    // Result will be saved into request.user
     passport.deserializeUser(async function (userObj, doneFunction) { 
       console.log("DE - SERIALIZING... ");
       console.log(userObj);
@@ -47,6 +55,4 @@ module.exports = {
       }
     }
   }
-
-  
 };
