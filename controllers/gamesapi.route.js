@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const router = express.Router();
 const gameRepo = require('../utils/games.repository');
@@ -16,8 +14,8 @@ async function gameListAction(request, response) {
         var games = await gameRepo.getAllGames();
         response.send(JSON.stringify(games));
     } catch (err) {
-        console.error("Erreur lors de la récupération des game :", err);
-        response.status(500).send("Erreur serveur lors de la récupération des game.");
+        console.error("Error retrieving games:", err);
+        response.status(500).send("Server error while retrieving games.");
     }
 }
 
@@ -87,10 +85,3 @@ async function gameUpdateAction(request, response) {
 }
 
 module.exports = router;
-
-
-
-
-
-
-

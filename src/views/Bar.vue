@@ -235,8 +235,6 @@ export default {
       barGames: [],
       barEmployees: [],
       showHours: false,
-      //drinks button added
-    filteredDrinks: [], 
     };
   },
 
@@ -245,11 +243,11 @@ export default {
 
   
   mounted() {
-    this.loadBarData();
     const barId = parseInt(this.$route.params.barId, 10);
+    this.loadBarData();
+    this.loadBarGames(barId);
     this.loadBarEmployees(barId); // Uses the dynamic identifier
-    //this.loadBarGames(barId);
-    //this.loadAllDrinks();
+    this.loadAllDrinks();
     this.bar = barsData.find(bar => bar.id_bar === barId);
     
     },
@@ -261,8 +259,12 @@ export default {
     },
     filteredGames() {
       return this.barGames;
+    },
+    filteredDrinks() {
+      return this.barDrinks;
     }
   },
+
   methods: {
   loadBarData() {
     const barId = parseInt(this.$route.params.id, 10);
@@ -294,7 +296,106 @@ export default {
 
   //----------------------------------------GAMES----------------------------------------------------
   
+  async loadAllGames() {
+    try {
+        let responseGames = await fetch('http://localhost:3000/games/list'); // Appel API pour récupérer tous les jeux
+        this.barGames = await responseGames.json(); 
+    } catch (error) {
+        console.error("Erreur lors du chargement des jeux :", error);
+      }
+  },
+  async loadBarGames(barId) {
+      try {
+        const responsegames = await fetch('http://localhost:3000/games/list');
+        if (!responsegames.ok) {
+          const msg = await responsegames.text();
+          alert("Erreur chargement des games: " + msg);
+          return;
+        }
+        let allGames = await responsegames.json();
+        
+        const responsebargames = await fetch('http://localhost:3000/bargames/list');
+        if (!responsebargames.ok) {
+          const msg = await responsebargames.text();
+          alert("Erreur chargement des bar games: " + msg);
+          return;
+        }
+        let allBarGames = await responsebargames.json();
+        
+        const associatedGameIds = [];
+        for (const bg of allBarGames) {
+          if (bg.id_bar === barId) {
+            associatedGameIds.push(bg.id_game);
+          }
+        }
 
+        if (associatedGameIds.length === 0) {
+          console.warn(`Aucun jeu associé au bar avec ID ${barId}`);
+          this.barGames = [];
+          return;
+        }
+
+        // Filter the games to include only those associated with the bar
+        this.barGames = allGames.filter(game => associatedGameIds.includes(game.id_game));
+
+        //this.barWorkers = allGames.filter(gmes => gmes.id_bar === barId);
+        console.log("Employés chargés:", this.barGames);
+      } catch (error) {
+        console.error("Erreur chargement employés:", error);
+      }
+  },
+  async addGame(){
+    try {
+        alert("CREATE... ");
+        let response = await this.$http.get("http://localhost:3000/games/create");
+        this.loadAllGames();
+      }
+      catch (ex) { console.log(ex); }
+  },
+  async addEmployee() {
+      // Exemple pour ajouter un employé
+      const barId = parseInt(this.$route.params.barId, 10);
+      const newEmployee = {
+        id_drink: 0,
+        id_bar: barId
+      };
+      try {
+        const response = await fetch("http://localhost:3000/employees/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEmployee)
+        });
+        if (!response.ok) throw new Error("Erreur lors de la création");
+        await this.loadBarEmployees(barId);
+      } catch (error) {
+        console.error("Erreur ajout employé:", error);
+      }
+  },
+  async sendDeleteRequestEmployee(employeeId) {
+    try {
+      const barId = parseInt(this.$route.params.barId, 10);
+
+      // Appel GET pour supprimer l'employé
+      const response = await fetch(`http://localhost:3000/employees/del/${employeeId}`, {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        const errMsg = await response.text();
+        alert("Erreur lors de la suppression de l'employé : " + errMsg);
+        return;
+      }
+
+      let result = await response.json();
+      console.log("Employee deleted:", result);
+
+      // Actualiser la liste des employés
+      await this.loadBarEmployees(barId);
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'employé :", error);
+      alert("Une erreur est survenue lors de la suppression de l'employé.");
+    }
+  },
  
 
 
