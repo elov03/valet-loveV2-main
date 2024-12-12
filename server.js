@@ -8,9 +8,13 @@ const cors = require('cors');
 const app = express();
 app.set("view engine", "ejs");
 app.set("views", "views");
-app.listen(process.env.WEB_PORT, '127.0.0.1',
-  function() { console.log("Listening on "+process.env.WEB_PORT); }
-);
+
+// Lancement du serveur
+const port = process.env.WEB_PORT || 3000;
+app.listen(port, '0.0.0.0', () => {
+    console.log("Listening on " + port);
+});
+
 // Configuration simple de CORS
 
 
@@ -30,7 +34,7 @@ app.use(session({
 
 //ajout juste en dessous
 app.use(cors({
-  origin: 'http://192.168.1.131:8080', // Adresse du frontend
+  origin: 'http://localhost:8080', // Adresse du frontend
   credentials: true,// Autorise les cookies/credentials
   methods: [ 'GET', 'POST' ] 
 }));
@@ -71,9 +75,3 @@ app.use("/bargames", require("./controllers/bar_gamesapi.route"));
 app.use("/drinks", require("./controllers/drinksapi.route"));
 app.use("/bardrinks", require("./controllers/bar_drinksapi.route"));
 app.use("/users", require("./controllers/auth.route"));
-
-// Lancement du serveur
-const port = process.env.WEB_PORT || 3000;
-app.listen(port, '0.0.0.0', () => {
-    console.log("Listening on " + port);
-});
