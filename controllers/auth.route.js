@@ -6,19 +6,7 @@ const userRepo = require("../utils/users.repository");
 
 
 
-// Routes similaires à celles du prof
-router.get('/list', userListAction);
 
-
-async function userListAction(request, response) {
-    try {
-        var users = await userRepo.getAllUser();
-        response.send(JSON.stringify(users));
-    } catch (err) {
-        console.error("Erreur lors de la récupération des employés :", err);
-        response.status(500).send("Erreur serveur lors de la récupération des employés.");
-    }
-}
 
 
 // http://localhost:9000/auth
@@ -33,13 +21,12 @@ router.get("/logout", logoutAction);
 
 
 
-  
 
-// use same endpoints for both roles
 async function userdataAction(request, response) {
   let userJson = JSON.stringify(request.user); 
   response.send(userJson);
 }
+
 
 async function protectedGetAction(request, response) {
   // TODO: authorize using all factors (resource / context / environment) ...
@@ -75,6 +62,12 @@ async function loginPostAction(request, response) {
     response.send(JSON.stringify(resultObject));
   }
 }
+
+
+
+
+
+
 
 function logoutAction(request, response) {
   request.logout(function(err){

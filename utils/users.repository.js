@@ -10,23 +10,6 @@ pool = require(__dirname + "\\db.include.js");
 // TODO  (not now): Email verification... User activation... Better hash (bcrypt, pbkdf2, argon2)... Password rules...
 
 module.exports = {
-
-
-  async getAllUser() {
-    try {
-        let sql = "SELECT * FROM Users";
-        const [rows, fields] = await pool.execute(sql);
-        console.log("USERS FETCHED: " + rows.length);
-        return rows;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
-
-},
-
-
-
   async getOneUser(userName) {
     try {
       let conn = await pool.getConnection();
@@ -43,15 +26,10 @@ module.exports = {
       throw err;
     }
   },
-
-   
-  
   
   async areValidCredentials(username, password) {
     try {
-      //let sql = "SELECT * FROM USERS WHERE user_name = ? AND user_pass COLLATE utf8mb4_general_ci  = sha2(concat(user_created, ?), 224) COLLATE utf8mb4_general_ci ";
-      let sql = "SELECT * FROM USERS WHERE user_name = ? AND user_pass = sha2(concat(user_created, ?), 224)";
-      
+      let sql = "SELECT * FROM USERS WHERE user_name = ? AND user_pass COLLATE utf8mb4_general_ci  = sha2(concat(user_created, ?), 224) COLLATE utf8mb4_general_ci "; 
       // TODO: better salt + pw hash (bcrypt, pbkdf2, argon2)
       // COLLATE usually not needed (mariaDb compatibility)
       const [rows, fields] = await pool.execute(sql, [username, password]); 
@@ -66,9 +44,4 @@ module.exports = {
       throw err;
     }
   },
-
-
-
-
-
-}; 
+  };
