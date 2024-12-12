@@ -63,8 +63,8 @@
         </div>
 
         <div class="items">
-          <button @click="currentSection = 'all_drinks'">DRINKS</button>
-          <button @click="currentSection = 'all_games'">GAMES</button>
+          <button @click="currentSection = 'all_drinks'">DRINKS INTER BAR</button>
+          <button @click="currentSection = 'all_games'">GAMES INTER BAR</button>
         </div>
       </section>
 
@@ -82,11 +82,10 @@
       <section v-if="currentSection === 'drinks'">
         <button @click="currentSection = 'home'" class="back-button">← Back to Home</button>
         <h2 class="centered-title">Available Drinks</h2>
-        <button @click="addDrink" class="add-button">+ Add a drink</button>
         <table class="drink-table" v-if="filteredDrinks.length > 0">
           <thead>
             <tr>
-              <th>Image</th>
+              <th>ID</th>
               <th>Name</th>
               <th>Ingredients</th>
               <th>Price (€)</th>
@@ -94,10 +93,22 @@
           </thead>
           <tbody>
             <tr v-for="(drink, index) in filteredDrinks" :key="index">
-              <td><img :src="drink.image" :alt="drink.name_drink" class="drink-image"></td>
-              <td>{{ drink.name_drink }}</td>
-              <td>{{ drink.ingredient_drink }}</td>
-              <td>{{ drink.price_selling_drink }}</td>
+              <td v-if="!drink.editMode">{{ drink.id_drink }}</td>
+              <td v-else>
+                <input v-model="drink.id_drink" placeholder="Enter drink id">
+              </td>
+              <td v-if="!drink.editMode">{{ drink.name_drink }}</td>
+              <td v-else>
+                <input v-model="drink.name_drink" placeholder="Enter drink name">
+              </td>
+              <td v-if="!drink.editMode">{{ drink.ingredient_drink }}</td>
+              <td v-else>
+                <input v-model="drink.ingredient_drink" placeholder="Enter employee post">
+              </td>
+              <td v-if="!drink.editMode">{{ drink.price_selling_drink }}</td>
+              <td v-else>
+                <input type="number" v-model="drink.price_selling_drink" placeholder="Enter selling price">
+              </td>
             </tr>
           </tbody>
         </table>
@@ -108,19 +119,16 @@
       <section v-if="currentSection === 'games'">
         <button @click="currentSection = 'home'" class="back-button">← Back to Home</button>
         <h2 class="centered-title">Available Games</h2>
-        <button @click="addGame" class="add-button">+ Add a game</button>
         <table class="game-table" v-if="filteredGames.length > 0">
           <thead>
             <tr>
-              <th>Image</th>
+              <th>ID</th>
               <th>Name</th>
               <th>Price (€)</th>
               <th>Time</th>
               <th>Min Players</th>
               <th>Max Players</th>
               <th>State</th>
-              <th>Update</th>
-              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -155,13 +163,6 @@
                   <option>Available</option>
                   <option>Bad</option>
                 </select>
-              </td>
-              <td>
-                <button v-if="!game.editMode" @click="editGame(index)">Update</button>
-                <button v-else @click="saveGame(index)">Save</button>
-              </td>
-              <td>
-                <button @click="sendDeleteRequestGame(index+1)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -222,7 +223,7 @@
         <button @click="currentSection = 'home'" class="back-button">← Back to Home</button>
         <h2 class="centered-title">Available Drinks</h2>
         <button @click="addDrink" class="add-button">+ Add a drink</button>
-        <table class="drink-table" v-if="AllDrinks.length > 0">
+        <table class="drink-table" v-if="filteredDrinks.length > 0">
           <thead>
             <tr>
               <th>ID</th>
@@ -306,7 +307,6 @@
               <td v-else>
                 <input type="number" v-model="game.nb_people_min_game" placeholder="Enter nb people min per game">
               </td>
-              <td></td>
               <td v-if="!game.editMode">{{ game.nb_people_max_game }}</td>
               <td v-else>
                 <input type="number" v-model="game.nb_people_max_game" placeholder="Enter nb people max per game">
@@ -705,15 +705,14 @@ export default {
 
         if (associatedGameIds.length === 0) {
           console.warn(`Aucun jeu associé au bar avec ID ${barId}`);
-          this.barGames = [];
+          this.barGamesFiltered = [];
           return;
         }
 
         // Filter the games to include only those associated with the bar
-        this.barGames = allGames.filter(game => associatedGameIds.includes(game.id_game));
+        this.barGamesFiltered = allGames.filter(game => associatedGameIds.includes(game.id_game));
 
-        //this.barWorkers = allGames.filter(gmes => gmes.id_bar === barId);
-        console.log("Employés chargés:", this.barGames);
+        console.log("Employés chargés:", this.barGamesFiltered);
       } catch (error) {
         console.error("Erreur chargement employés:", error);
       }
