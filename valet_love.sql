@@ -42,14 +42,13 @@ CREATE TABLE Drink (
 
 -- Games table
 CREATE TABLE Games (
+    id_game INT AUTO_INCREMENT PRIMARY KEY
     name_game VARCHAR(30),
     price_game INT,
     time_game TIME,
     nb_people_min_game INT, 
     nb_people_max_game INT, 
     state_game VARCHAR(30),
-    id_bar INT,
-    FOREIGN KEY (id_bar) REFERENCES Bar(id_bar)
 );
 
 -- Employee table
@@ -103,12 +102,12 @@ INSERT INTO Drink (id_drink, name_drink, price_production_drink, price_selling_d
 (4, 'Soda', 20, 50, 'Carbonated Water, Sugar', 300);
 
 -- Inserting games
-INSERT INTO Games ( name_game, price_game, time_game, nb_people_min_game, nb_people_max_game, state_game, id_bar) VALUES
-('Pool', 500, '00:30:00', 2, 4, 'Available', 1),
-('Darts', 300, '00:15:00', 2, 8, 'Available', 1),
-('Foosball', 400, '00:20:00', 2, 4, 'Available', 2),
-('Poker', 600, '01:00:00', 4, 10, 'Available', 2),
-('Chess', 100, '01:00:00', 2, 2, 'Available', 3);
+INSERT INTO Games (id_game, name_game, price_game, time_game, nb_people_min_game, nb_people_max_game, state_game, id_bar) VALUES
+(1,'Pool', 500, '00:30:00', 2, 4, 'Available', 1),
+(2,'Darts', 300, '00:15:00', 2, 8, 'Available', 1),
+(3,'Foosball', 400, '00:20:00', 2, 4, 'Available', 2),
+(4,'Poker', 600, '01:00:00', 4, 10, 'Available', 2),
+(5,'Chess', 100, '01:00:00', 2, 2, 'Available', 3);
 
 -- Employee integration
 INSERT INTO Employee (id_employee, name_employee, age_employee, gender_employee, post_employee, salary_employee, id_bar) VALUES
