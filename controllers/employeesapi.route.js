@@ -10,7 +10,6 @@ router.get('/del/:employeeId', employeeDelAction);
 router.post('/update/:employeeId', employeeUpdateAction);
 
 
-//retrieve the list of all employees
 async function employeeListAction(request, response) {
     try {
         var employees = await employeeRepo.getAllEmployees();
@@ -21,7 +20,6 @@ async function employeeListAction(request, response) {
     }
 }
 
-//create a new employee in the database
 async function employeeCreateAction(request, response) {
     try {
         var employeeId = await employeeRepo.addOneEmployee(request.body.id_bar);
@@ -42,8 +40,6 @@ async function employeeCreateAction(request, response) {
     }
 }
 
-
-//Retrieves and returns an employee.
 async function employeeShowAction(request, response) {
     try {
         var oneEmployee = await employeeRepo.getOneEmployee(request.params.employeeId);
@@ -54,7 +50,6 @@ async function employeeShowAction(request, response) {
     }
 }
 
-//Deletes an employee by user ID.
 async function employeeDelAction(request, response) {
     try {
         var numRows = await employeeRepo.delOneEmployee(request.params.employeeId);
@@ -66,7 +61,6 @@ async function employeeDelAction(request, response) {
     }
 }
 
-//Create or update employee.
 async function employeeUpdateAction(request, response) {
     try {
         var employeeId = request.params.employeeId;

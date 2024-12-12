@@ -40,7 +40,7 @@
           </div>
         </div>
 
-        <!-- Location Section with Toggleable Hours -->
+        <!-- Location Section + Toggleable Hours -->
         <div class="location">
           <h3>Location</h3>
           <div class="location-content">
@@ -68,12 +68,12 @@
         </div>
       </section>
 
-      <!-- About Section (not implemented)-->
+      <!-- About Section -->
       <section v-if="currentSection === 'About'">
         <p>About Page</p>
       </section>
 
-      <!-- Favorite Section (not implemented)-->
+      <!-- Favorite Section -->
       <section v-if="currentSection === 'favorite'">
         <p>Favorite Page</p>
       </section>
@@ -210,7 +210,7 @@
                 <button v-else @click="saveEmployee(index)">Save</button>
               </td>
               <td>
-                <button @click="sendDeleteRequestEmployee(employee.id_employee)">Delete</button><!--was index before but index is number of line and not id-->
+                <button @click="sendDeleteRequestEmployee(employee.id_employee)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -257,7 +257,7 @@
                 <button v-else @click="saveDrink(index)">Save</button>
               </td>
               <td>
-                <button @click="sendDeleteRequestDrink(drink.id_drink)">Delete</button><!--was index before but index is number of line and not id-->
+                <button @click="sendDeleteRequestDrink(drink.id_drink)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -320,7 +320,7 @@
                 <button v-else @click="saveGame(index)">Save</button>
               </td>
               <td>
-                <button @click="sendDeleteRequestGame(game.id_game)">Delete</button><!--was index before but index is number of line and not id-->
+                <button @click="sendDeleteRequestGame(game.id_game)">Delete</button>
               </td>
             </tr>
           </tbody>
@@ -470,7 +470,6 @@ export default {
       // Désactiver le mode édition
       this.$set(this.allDrinks[index], 'editMode', false);
 
-      // Recharger la liste des employés pour refléter les changements
       await this.loadAllDrinks();
     } catch (error) {
       console.error("Error updating drink :", error);
@@ -517,7 +516,7 @@ export default {
         const responsedrinks = await fetch('http://localhost:3000/drinks/list');
         if (!responsedrinks.ok) {
           const msg = await responsedrinks.text();
-          alert("Erreur chargement des games: " + msg);
+          alert("Error loading drinks: " + msg);
           return;
         }
         let allDrinks = await responsedrinks.json();
@@ -525,7 +524,7 @@ export default {
         const responsebardrinks = await fetch('http://localhost:3000/bardrinks/list');
         if (!responsebardrinks.ok) {
           const msg = await responsebardrinks.text();
-          alert("Erreur chargement des bar games: " + msg);
+          alert("Error loading bar drinks: " + msg);
           return;
         }
         let allBardrinks = await responsebardrinks.json();
@@ -546,20 +545,19 @@ export default {
         // Filter the games to include only those associated with the bar
         this.barDrinksFiltered = allDrinks.filter(drink => associatedDrinkIds.includes(drink.id_drink));
 
-        //this.barWorkers = allGames.filter(gmes => gmes.id_bar === barId);
-        console.log("Employés chargés:", this.allDrinks);
+        console.log("Drinks load", this.allDrinks);
       } catch (error) {
-        console.error("Erreur chargement employés:", error);
+        console.error("Error loading drinks:", error);
       }
   },
 
   //----------------------------------------ALL GAMES----------------------------------------------------  
   async loadAllGames() {
     try {
-        let responseGames = await fetch('http://localhost:3000/games/list'); // Appel API pour récupérer tous les jeux
+        let responseGames = await fetch('http://localhost:3000/games/list'); 
         this.allGames = await responseGames.json(); 
     } catch (error) {
-        console.error("Erreur lors du chargement des jeux :", error);
+        console.error("Error loading games:", error);
       }
   },
 
@@ -623,10 +621,8 @@ export default {
       const result = await response.json();
       console.log("Game updated:", result);
 
-      // Désactiver le mode édition
       this.$set(this.allGames[index], 'editMode', false);
 
-      // Recharger la liste des game pour refléter les changements
       await this.loadAllGames();
     } catch (error) {
       console.error("Error updating game :", error);
@@ -683,7 +679,7 @@ export default {
         const responsegames = await fetch('http://localhost:3000/games/list');
         if (!responsegames.ok) {
           const msg = await responsegames.text();
-          alert("Erreur chargement des games: " + msg);
+          alert("Error loading games: " + msg);
           return;
         }
         let allGames = await responsegames.json();
@@ -691,7 +687,7 @@ export default {
         const responsebargames = await fetch('http://localhost:3000/bargames/list');
         if (!responsebargames.ok) {
           const msg = await responsebargames.text();
-          alert("Erreur chargement des bar games: " + msg);
+          alert("Error loading des bar games: " + msg);
           return;
         }
         let allBarGames = await responsebargames.json();
@@ -704,7 +700,7 @@ export default {
         }
 
         if (associatedGameIds.length === 0) {
-          console.warn(`Aucun jeu associé au bar avec ID ${barId}`);
+          console.warn(`No games associated with bar with ID ${barId}`);
           this.barGamesFiltered = [];
           return;
         }
@@ -712,9 +708,9 @@ export default {
         // Filter the games to include only those associated with the bar
         this.barGamesFiltered = allGames.filter(game => associatedGameIds.includes(game.id_game));
 
-        console.log("Employés chargés:", this.barGamesFiltered);
+        console.log("employees load:", this.barGamesFiltered);
       } catch (error) {
-        console.error("Erreur chargement employés:", error);
+        console.error("Error load employee:", error);
       }
   },
 
@@ -729,7 +725,6 @@ export default {
     }
   },
 
-  //displays employees according to the bar to which they are assigned using the bar id
   async loadBarEmployees(barId) {
       try {
         const response = await fetch('http://localhost:3000/employees/list');
@@ -746,7 +741,6 @@ export default {
       }
   },
 
-  //add an employee to my database
   async addEmployee() {
       const barId = parseInt(this.$route.params.barId, 10);
       const newEmployee = {
@@ -770,12 +764,10 @@ export default {
       }
   },
 
-  //Activates edit mode for an employee
   async editEmployee(index) {
     this.$set(this.barEmployees[index], 'editMode', true);
   },
-    
-  //save the employee after editing it
+
     async saveEmployee(index) {
     try {
       const barId = parseInt(this.$route.params.barId, 10);
@@ -809,23 +801,19 @@ export default {
       const result = await response.json();
       console.log("Employee updated:", result);
 
-      // Désactiver le mode édition
       this.$set(this.barEmployees[index], 'editMode', false);
 
-      // Recharger la liste des employés pour refléter les changements
       await this.loadBarEmployees(barId);
     } catch (error) {
       console.error("Error updating employee :", error);
       alert("An error has occurred while updating the employee.");
     }
   },
-  
-  //deletes the employee acr to her id
+
   async sendDeleteRequestEmployee(employeeId) {
     try {
       const barId = parseInt(this.$route.params.barId, 10);
 
-      // GET call to delete the employee
       const response = await fetch(`http://localhost:3000/employees/del/${employeeId}`, {
         method: "GET"
       });
@@ -839,7 +827,6 @@ export default {
       let result = await response.json();
       console.log("Employee deleted:", result);
 
-      // Update the list of employees by calling the loadBarEmployees function
       await this.loadBarEmployees(barId);
     } catch (error) {
       console.error("Error when deleting employee :", error);
@@ -956,9 +943,9 @@ header {
 .drinks-section img,
 .games-section img,
 .employee-section img {
-  width: 300px;   /* Ajustez la taille de l'image */
+  width: 300px;   
   height: auto;
-  margin-bottom: 10px; /* Espacement entre l'image et le bouton */
+  margin-bottom: 10px;
 }
 
 .employee-image{
@@ -1011,7 +998,7 @@ header {
   background-color: #f1f1f1;
 }
 
-/* Images in Tables */
+
 .drink-image, .game-image {
   width: 50px;
   height: 50px;
@@ -1019,7 +1006,6 @@ header {
   border-radius: 4px;
 }
 
-/* Location Section */
 .location {
   display: flex;
   flex-direction: column;
@@ -1049,7 +1035,6 @@ header {
   border-radius: 8px;
 }
 
-/* Schedule Section */
 .schedule-container {
   margin-top: 10px;
 }
@@ -1077,7 +1062,6 @@ header {
   margin: 5px 0;
 }
 
-/*bar section*/
 .bar-image {
   max-width: 100%;
   height: auto;

@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const drinkRepo = require('../utils/drinks.repository');
 
-// Routes similaires à celles du prof
 router.get('/list', drinkListAction);
 router.post('/create', drinkCreateAction);
-//router.get('/show/:gameId', gameShowAction);
 router.get('/del/:drinkId', drinkDelAction);
 router.post('/update/:drinkId', drinkUpdateAction);
+
 
 async function drinkListAction(request, response) {
     try {

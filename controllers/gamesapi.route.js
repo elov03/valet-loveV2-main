@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const gameRepo = require('../utils/games.repository');
 
-// Routes similaires à celles du prof
 router.get('/list', gameListAction);
 router.post('/create', gameCreateAction);
-//router.get('/show/:gameId', gameShowAction);
 router.get('/del/:gameId', gameDelAction);
 router.post('/update/:gameId', gameUpdateAction);
 

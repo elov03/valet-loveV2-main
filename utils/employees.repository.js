@@ -1,7 +1,6 @@
 const pool = require(__dirname + "/db.include.js");
 
 module.exports = {
-    //he's just another employee
     getBlankEmployee() {
         return {
             id_employee: 0,
@@ -14,7 +13,6 @@ module.exports = {
         };
     },
 
-    //show all employees
     async getAllEmployees() {
         try {
             let sql = "SELECT * FROM Employee";
@@ -27,7 +25,6 @@ module.exports = {
         }
     },
 
-    //retrieve employee data using their id
     async getOneEmployee(employeeId) {
         try {
             let sql = "SELECT * FROM Employee WHERE id_employee = ?";
@@ -44,7 +41,6 @@ module.exports = {
         }
     },
 
-    //delete employee
     async delOneEmployee(employeeId) {
         try {
             let sql = "DELETE FROM Employee WHERE id_employee = ?";
@@ -58,7 +54,6 @@ module.exports = {
         }
     },
 
-    //add an employee
     async addOneEmployee(id_bar) {
         try {
             let sql = "INSERT INTO Employee (id_bar, name_employee, age_employee, gender_employee, post_employee, salary_employee) VALUES (?, 'Default Name', 0, 'M', 'Default Post', 0)";
@@ -72,8 +67,6 @@ module.exports = {
         }
     },
 
-
-    //edit an employee
     async editOneEmployee(employeeId, id_bar, name, age, gender, post, salary) {
         try {
             let sql = "UPDATE Employee SET id_bar=?, name_employee=?, age_employee=?, gender_employee=?, post_employee=?, salary_employee=? WHERE id_employee=?";
