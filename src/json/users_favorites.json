@@ -1,0 +1,12 @@
+[
+    {
+      "id_user": 1, "favorite_parcs": [3, 5, 8]
+    },
+    {
+      "id_user": 2, "favorite_parcs": [1, 2]
+    },
+    {
+      "id_user": 3, "favorite_parcs": []
+    }
+  ]
+  

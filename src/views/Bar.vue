@@ -73,11 +73,6 @@
         <p>About Page</p>
       </section>
 
-      <!-- Favorite Section -->
-      <section v-if="currentSection === 'favorite'">
-        <p>Favorite Page</p>
-      </section>
-
       <!-- Drinks Section -->
       <section v-if="currentSection === 'drinks'">
         <button @click="currentSection = 'home'" class="back-button">← Back to Home</button>

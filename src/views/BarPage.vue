@@ -8,7 +8,8 @@
       <div class="navbar">
         <button @click="currentSection = 'home'">HOME</button>
         <button @click="currentSection = 'About'">ABOUT</button>
-        <button @click="currentSection = 'favorite'">FAVORITE</button>
+        <!--<router-link :to="{ name: 'Favorite'}" class="favorite">FAVORITE</router-link>-->
+        <router-link :to="{ name: 'Favorite', params: { userId: 1 } }"><button>FAVORITE</button></router-link>
         <router-link :to="{ name: 'Login'}" class="login">LOGIN</router-link>
       </div>
     </header>  
@@ -55,6 +56,12 @@
                 See more
               </router-link>
 
+              <!-- Bouton cœur -->
+              <button class="heart-button" @click="toggleFavorite(bar)">
+              {{ bar.isFavorite ? "❤️" : "🤍" }}
+              </button>
+
+
             </div>
           </div>
         </section>
@@ -81,30 +88,69 @@ export default {
     return { 
       currentSection: "home",
       bars: barsData,
+      favorites: JSON.parse(localStorage.getItem("favorites")) || [
+        {
+          id_user: 1,
+          favorite_parcs: []
+        }
+      ]
     };
   },
-  
+
+  mounted() {
+    const userId = 1;
+    const userFavorites = this.favorites.find(user => user.id_user === userId);
+
+    if (!userFavorites) return;
+
+    this.bars.forEach(bar => {
+      const isFav = userFavorites.favorite_parcs.includes(bar.id_bar);
+      this.$set(bar, 'isFavorite', isFav);
+    });
+  },
+
   methods: {
-  prevImage(barIndex) {
-    const bar = this.bars[barIndex];
-    bar.currentImageIndex = (bar.currentImageIndex - 1 + bar.images.length) % bar.images.length;
-  },
-  nextImage(barIndex) {
-    const bar = this.bars[barIndex];
-    bar.currentImageIndex = (bar.currentImageIndex + 1) % bar.images.length;
-  },
-  currentImageIndex(bar) {
-    if (bar.currentImageIndex === undefined) {
-      this.$set(bar, 'currentImageIndex', 0); // Initialisation si non défini
-    }
-    return bar.currentImageIndex;
-  },
-  toggleHours(index) {
+    toggleHours(index) {
       this.bars[index].showHours = !this.bars[index].showHours;
     },
-},
 
+    currentImageIndex(bar) {
+      if (bar.currentImageIndex === undefined) {
+        this.$set(bar, 'currentImageIndex', 0);
+      }
+      return bar.currentImageIndex;
+    },
 
+    prevImage(barIndex) {
+      const bar = this.bars[barIndex];
+      bar.currentImageIndex = (bar.currentImageIndex - 1 + bar.images.length) % bar.images.length;
+    },
+
+    nextImage(barIndex) {
+      const bar = this.bars[barIndex];
+      bar.currentImageIndex = (bar.currentImageIndex + 1) % bar.images.length;
+    },
+
+    // 👇 ICI LA MÉTHODE QUI MANQUE
+    toggleFavorite(bar) {
+      const userId = 1;
+      const userFavorites = this.favorites.find(user => user.id_user === userId);
+      if (!userFavorites) return;
+
+      const index = userFavorites.favorite_parcs.indexOf(bar.id_bar);
+
+      if (index === -1) {
+        userFavorites.favorite_parcs.push(bar.id_bar);
+        this.$set(bar, 'isFavorite', true); // 👈 rend réactif
+      } else {
+        userFavorites.favorite_parcs.splice(index, 1);
+        this.$set(bar, 'isFavorite', false); // 👈 rend réactif
+      }
+
+      localStorage.setItem("favorites", JSON.stringify(this.favorites));
+    }
+
+  }
 };
 </script>
 
@@ -329,6 +375,20 @@ header {
 
 .heart-icon:hover {
   transform: scale(1.1);
+}
+
+.heart-button {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  margin-left: 10px;
+  cursor: pointer;
+  color: #e74c3c;
+  transition: transform 0.2s;
+}
+
+.heart-button:hover {
+  transform: scale(1.2);
 }
 
 </style>

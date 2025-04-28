@@ -25,7 +25,7 @@ const cors = require("cors");
 // CORS configuration
 app.use(
   cors({
-    origin: "http://192.168.1.131:8080", // Frontend address
+    origin: "http://192.168.1.146:8082", // Frontend address
     credentials: true, 
     methods: ['GET', 'POST'],
   })
